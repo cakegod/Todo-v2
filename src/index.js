@@ -2,10 +2,8 @@
 
 import './styles.css';
 import './normalize.css';
-import { DOM, menu, modal, taskDisplayer } from './modules/DOM';
-
+import { DOM, taskDisplayer, modal, project, menu } from './modules/DOM';
 import { Project, Task } from './modules/classes';
-import { currentTask } from '../../Todo/src/modules/task';
 
 const projectArray = [];
 const newProject = new Project('home', []);
@@ -15,11 +13,14 @@ projectArray.push(newProject2);
 const newProject3 = new Project('test2', []);
 projectArray.push(newProject3);
 
+function updateProjectIndex() {
+	currentProjectIndex = projectArray.findIndex(
+		(array) => array.title === currentProject,
+	);
+}
 let currentProject = 'home';
 
-let currentProjectIndex = projectArray.findIndex(
-	(array) => array.title === currentProject,
-);
+let currentProjectIndex = 0;
 let currentTaskIndex;
 let currentTaskContainer;
 let currentObject;
@@ -95,7 +96,7 @@ function renderTask(newTask) {
 		}
 	}
 
-	checkboxToggle();
+	taskColor(newTask, task);
 
 	checkbox.addEventListener('click', () => {
 		checkboxToggle();
@@ -103,6 +104,7 @@ function renderTask(newTask) {
 
 	task.addEventListener('click', () => {
 		displayTaskDetails(newTask);
+		checkboxToggle();
 		currentTaskIndex = projectArray[currentProjectIndex].array.indexOf(newTask);
 		currentTaskContainer = { task, checkbox, title };
 		currentObject = projectArray[currentProjectIndex].array[currentTaskIndex];
@@ -178,4 +180,69 @@ function submitEdit(event) {
 	taskColor(currentObject, currentTaskContainer.task);
 
 	console.log(currentObject, projectArray);
+}
+
+// Mobile display animation
+project.new.addEventListener('click', displayForm);
+// Display the form and hides the 'New Project' button
+function displayForm() {
+	project.container.classList.remove('inactive');
+	project.new.classList.add('inactive');
+}
+
+// Submits the new Project
+project.container.addEventListener('submit', createProject);
+
+// Creates the Project
+function createProject(event) {
+	event.preventDefault();
+	const newProject = new Project(project.input.value, []);
+	projectArray.push(newProject);
+	projectRender(newProject);
+	projectInputClear();
+	hideForm();
+	console.log(projectArray);
+}
+
+// Clear Project input
+function projectInputClear() {
+	project.container.classList.add('inactive');
+	project.container.reset();
+}
+
+// Hide form and displays 'New Project' button
+function hideForm() {
+	project.container.classList.add('inactive');
+	project.new.classList.remove('inactive');
+}
+
+// Render Project on the DOM
+function projectRender(newProject) {
+	const title = document.createElement('li');
+	title.className = 'project-title';
+	title.textContent = newProject.title;
+	project.list.appendChild(title);
+	title.addEventListener('click', () => {
+		currentProject = newProject.title;
+		updateProjectIndex();
+		clearTasks()
+		projectArray[currentProjectIndex].array.forEach((task) => renderTask(task));
+		console.log(currentProject, currentProjectIndex, projectArray[currentProjectIndex]);
+	});
+}
+
+menu.home.addEventListener('click', () => {
+	currentProject = 'home';
+	updateProjectIndex();
+	clearTasks();
+	projectArray[currentProjectIndex].array.forEach((task) => renderTask(task));
+	console.log(
+		currentProject,
+		currentProjectIndex,
+		projectArray[currentProjectIndex],
+	);
+});
+
+function clearTasks() {
+	DOM.taskWrapper.textContent = '';
 }

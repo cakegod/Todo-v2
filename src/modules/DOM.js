@@ -36,7 +36,7 @@ const modal = {
 	priority: document.getElementById("m-priority"),
 };
 
-const projectDOM = {
+const project = {
 	// Menu
 	menu: document.querySelector(".projects"),
 	new: document.querySelector(".new-project"),
@@ -49,15 +49,8 @@ const projectDOM = {
 
 const showTask = document.querySelector(".show-task");
 
-const projectArray = [];
 
 
 export {
-	DOM,
-	taskDisplayer,
-	modal,
-	projectDOM,
-	projectArray,
-	menu,
-	showTask,
+DOM, taskDisplayer, modal, project, menu 
 };
