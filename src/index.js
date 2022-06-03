@@ -5,6 +5,7 @@ import './normalize.css';
 import { DOM, taskDisplayer, modal, project, menu } from './modules/DOM';
 import { Project, Task } from './modules/classes';
 
+
 let projectArray = [];
 const newProject = new Project('home', []);
 projectArray.push(newProject);
@@ -276,3 +277,15 @@ menu.today.addEventListener('click', () => {
 function clearTasks() {
 	DOM.taskWrapper.textContent = '';
 }
+
+// Display animations after animation end
+
+setTimeout(() => {
+	modal.form.style.display = "grid";
+}, 800);
+setTimeout(() => {
+	menu.container.style.display = "block";
+}, 800);
+setTimeout(() => {
+	taskDisplayer.container.style.display = "flex";
+}, 800);
