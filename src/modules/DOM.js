@@ -47,7 +47,6 @@ const project = {
 	button: document.querySelector(".project-submit-button"),
 };
 
-const showTask = document.querySelector(".show-task");
 
 
 
