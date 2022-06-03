@@ -5,13 +5,9 @@ import './normalize.css';
 import { DOM, taskDisplayer, modal, project, menu } from './modules/DOM';
 import { Project, Task } from './modules/classes';
 
-const projectArray = [];
+let projectArray = [];
 const newProject = new Project('home', []);
 projectArray.push(newProject);
-const newProject2 = new Project('test1', []);
-projectArray.push(newProject2);
-const newProject3 = new Project('test2', []);
-projectArray.push(newProject3);
 
 function updateProjectIndex() {
 	currentProjectIndex = projectArray.findIndex(
@@ -49,7 +45,6 @@ modal.close.addEventListener('click', () => {
 
 	closeModal();
 });
-// Close modal
 function closeModal() {
 	modal.form.classList.remove('active');
 }
@@ -69,6 +64,28 @@ function pushTask(newTask) {
 	projectArray[currentProjectIndex].array.push(newTask);
 	console.log(projectArray);
 	renderTask(newTask);
+	saveStorage();
+}
+
+function saveStorage() {
+	localStorage.setItem('projectArray', JSON.stringify(projectArray));
+}
+
+if (projectArray.length > 0) {
+	loadStorage();
+}
+
+function loadStorage() {
+	projectArray = JSON.parse(localStorage.getItem('projectArray'));
+	projectArray[0].array.forEach((task) => renderTask(task))
+	projectArray.forEach(project => checkProjectName(project));
+	function checkProjectName(project) {
+		if (project.title !== "home") 
+			return renderProject(project)
+	};
+
+	
+	console.log(projectArray);
 }
 
 function renderTask(newTask) {
@@ -86,12 +103,12 @@ function renderTask(newTask) {
 
 	function checkboxToggle() {
 		if (newTask.checkbox) {
+			checkbox.textContent = 'radio_button_unchecked';
+			newTask.checkbox = false;
+			taskColor(newTask, task);
+		} else {
 			checkbox.textContent = 'radio_button_checked';
 			task.className = 'task checked-priority';
-			newTask.checkbox = false;
-		} else {
-			taskColor(newTask, task);
-			checkbox.textContent = 'radio_button_unchecked';
 			newTask.checkbox = true;
 		}
 	}
@@ -103,11 +120,10 @@ function renderTask(newTask) {
 	});
 
 	task.addEventListener('click', () => {
-		displayTaskDetails(newTask);
-		checkboxToggle();
 		currentTaskIndex = projectArray[currentProjectIndex].array.indexOf(newTask);
 		currentTaskContainer = { task, checkbox, title };
 		currentObject = projectArray[currentProjectIndex].array[currentTaskIndex];
+		displayTaskDetails();
 		console.log(
 			currentTaskIndex,
 			currentProjectIndex,
@@ -133,14 +149,14 @@ function taskColor(object, container) {
 	}
 }
 
-function displayTaskDetails(newTask) {
-	taskDisplayer.title.textContent = newTask.title;
-	taskDisplayer.description.textContent = newTask.description;
-	taskDisplayer.date.textContent = newTask.date;
+function displayTaskDetails() {
+	taskDisplayer.title.textContent = currentObject.title;
+	taskDisplayer.description.textContent = currentObject.description;
+	taskDisplayer.date.textContent = currentObject.date;
 
-	if (newTask.priority === 'high') {
+	if (currentObject.priority === 'high') {
 		taskDisplayer.priority.style.color = 'var(--red-high)';
-	} else if (newTask.priority === 'medium') {
+	} else if (currentObject.priority === 'medium') {
 		taskDisplayer.priority.style.color = 'var(--yellow-med)';
 	} else {
 		taskDisplayer.priority.style.color = 'var(--green-low)';
@@ -149,6 +165,7 @@ function displayTaskDetails(newTask) {
 
 taskDisplayer.delete.addEventListener('click', () => {
 	deleteTask();
+	saveStorage();
 });
 
 function deleteTask() {
@@ -168,6 +185,7 @@ function editTask() {
 	modal.description.value = currentObject.description;
 	modal.date.value = currentObject.date;
 	modal.priority.value = currentObject.priority;
+
 }
 
 function submitEdit(event) {
@@ -178,6 +196,7 @@ function submitEdit(event) {
 	currentObject.priority = modal.priority.value;
 	currentTaskContainer.title.textContent = modal.title.value;
 	taskColor(currentObject, currentTaskContainer.task);
+	saveStorage();
 
 	console.log(currentObject, projectArray);
 }
@@ -198,7 +217,8 @@ function createProject(event) {
 	event.preventDefault();
 	const newProject = new Project(project.input.value, []);
 	projectArray.push(newProject);
-	projectRender(newProject);
+	renderProject(newProject);
+	saveStorage();
 	projectInputClear();
 	hideForm();
 	console.log(projectArray);
@@ -217,7 +237,7 @@ function hideForm() {
 }
 
 // Render Project on the DOM
-function projectRender(newProject) {
+function renderProject(newProject) {
 	const title = document.createElement('li');
 	title.className = 'project-title';
 	title.textContent = newProject.title;
@@ -225,9 +245,13 @@ function projectRender(newProject) {
 	title.addEventListener('click', () => {
 		currentProject = newProject.title;
 		updateProjectIndex();
-		clearTasks()
+		clearTasks();
 		projectArray[currentProjectIndex].array.forEach((task) => renderTask(task));
-		console.log(currentProject, currentProjectIndex, projectArray[currentProjectIndex]);
+		console.log(
+			currentProject,
+			currentProjectIndex,
+			projectArray[currentProjectIndex],
+		);
 	});
 }
 
@@ -241,6 +265,12 @@ menu.home.addEventListener('click', () => {
 		currentProjectIndex,
 		projectArray[currentProjectIndex],
 	);
+});
+
+menu.today.addEventListener('click', () => {
+	const flatMap = projectArray.flatMap((project) => project.array);
+
+	flatMap.filter((task) => task.date === '2022-06-08');
 });
 
 function clearTasks() {
