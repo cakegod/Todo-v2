@@ -1,22 +1,27 @@
-import { projectArray, setProjectArray } from './../index';
-import { renderTask } from './task';
-import { renderProject } from './project';
+import { projectArray, setProjectArray } from "./global";
+import { renderTask } from "./task";
+import { renderProject } from "./project";
 
 function saveStorage() {
-	localStorage.setItem('projectArray', JSON.stringify(projectArray));
+  localStorage.setItem("projectArray", JSON.stringify(projectArray));
 }
 
 function loadStorage() {
-	setProjectArray(JSON.parse(localStorage.getItem('projectArray')));
-	projectArray[0].array.forEach((task) => renderTask(task));
-	projectArray.forEach((project) => checkProjectName(project));
-	function checkProjectName(project) {
-		if (project.title !== 'home') {
-			return renderProject(project);
-		}
-	}
+  setProjectArray(JSON.parse(localStorage.getItem("projectArray")));
+  // Render home tasks
+  projectArray[0].array.forEach((task) => renderTask(task));
 
-	console.log(projectArray);
+  // If the project is not 'home' then render the projects on the DOM
+  function checkProjectName(currentProject) {
+    if (currentProject.title !== "home") {
+      renderProject(currentProject);
+    }
+  }
+  projectArray.forEach((currentProject) => checkProjectName(currentProject));
+}
+
+if (projectArray.length > 0) {
+  loadStorage();
 }
 
 export { saveStorage, loadStorage };

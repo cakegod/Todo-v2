@@ -1,65 +1,63 @@
-import {taskDisplayer, modal} from './DOM';
+import { taskDisplayer, modal } from "./DOM";
+import { taskColor, displayTaskDetails} from "./task";
+import { saveStorage } from "./storage";
 import {
-	currentProjectIndex,
-	currentTaskIndex,
-	currentTaskContainer,
-	currentObject,
-	projectArray,
-	openModal,
-} from './../index';
-import { taskColor } from './task';
-import { saveStorage } from './storage';
+  projectArray,
+  currentProjectIndex,
+  currentTaskIndex,
+  currentTaskContainer,
+  currentObject,
+} from "./global";
 
-function displayTaskDetails() {
-	taskDisplayer.title.textContent = currentObject.title;
-	taskDisplayer.description.textContent = currentObject.description;
-	taskDisplayer.date.textContent = currentObject.date;
-
-	if (currentObject.priority === 'high') {
-		taskDisplayer.priority.style.color = 'var(--red-high)';
-	} else if (currentObject.priority === 'medium') {
-		taskDisplayer.priority.style.color = 'var(--yellow-med)';
-	} else {
-		taskDisplayer.priority.style.color = 'var(--green-low)';
-	}
+function openModal() {
+  modal.form.classList.add("active");
 }
 
-taskDisplayer.delete.addEventListener('click', () => {
-	deleteTask();
-	saveStorage();
-});
+function closeModal() {
+  modal.form.classList.remove("active");
+}
+
+function clearModal() {
+  modal.form.reset();
+}
+
 
 function deleteTask() {
-	projectArray[currentProjectIndex].array.splice(currentTaskIndex, 1);
-	currentTaskContainer.task.remove();
-	console.log(projectArray);
+  projectArray[currentProjectIndex].array.splice(currentTaskIndex, 1);
+  currentTaskContainer.task.remove();
 }
 
-taskDisplayer.edit.addEventListener('click', () => {
-	editTask();
+taskDisplayer.delete.addEventListener("click", () => {
+  deleteTask();
+  saveStorage();
 });
 
-function editTask() {
-	openModal();
-	modal.form.addEventListener('submit', submitEdit);
-	modal.title.value = currentObject.title;
-	modal.description.value = currentObject.description;
-	modal.date.value = currentObject.date;
-	modal.priority.value = currentObject.priority;
-}
-
 function submitEdit(event) {
-	event.preventDefault();
-	currentObject.title = modal.title.value;
-	currentObject.description = modal.description.value;
-	currentObject.date = modal.date.value;
-	currentObject.priority = modal.priority.value;
-	currentTaskContainer.title.textContent = modal.title.value;
-	taskColor(currentObject, currentTaskContainer.task);
-	saveStorage();
-	displayTaskDetails();
-
-	console.log(currentObject, projectArray);
+  event.preventDefault();
+  currentObject.title = modal.title.value;
+  currentObject.description = modal.description.value;
+  currentObject.date = modal.date.value;
+  currentObject.priority = modal.priority.value;
+  currentTaskContainer.title.textContent = modal.title.value;
+  taskColor(currentObject, currentTaskContainer.task);
+  saveStorage();
+  displayTaskDetails();
+  closeModal();
 }
 
-export { displayTaskDetails, submitEdit };
+function editTask() {
+  openModal();
+  modal.form.addEventListener("submit", submitEdit);
+  modal.title.value = currentObject.title;
+  modal.description.value = currentObject.description;
+  modal.date.value = currentObject.date;
+  modal.priority.value = currentObject.priority;
+}
+
+taskDisplayer.edit.addEventListener("click", () => {
+  editTask();
+});
+
+
+
+export {submitEdit, openModal, closeModal, clearModal}

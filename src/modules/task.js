@@ -1,92 +1,120 @@
-import { DOM, modal } from './DOM';
+import { DOM, modal, taskDisplayer } from "./DOM";
+import { saveStorage } from "./storage";
 import {
-	currentProjectIndex,
-	currentTaskIndex,
-	currentTaskContainer,
-	projectArray,
-	setTaskIndex,
-	setContainer,
-	setObject,
-} from './../index';
-import {displayTaskDetails} from './taskDisplayer';
+  currentProjectIndex,
+  currentTaskIndex,
+  projectArray,
+  setContainer,
+  setObject,
+  setTaskIndex,
+  currentObject,
+} from "./global";
+import {clearModal} from "./taskDisplayer"; 
 
-function createTask(event) {
-	event.preventDefault();
-	const newTask = new Task(
-		modal.title.value,
-		modal.description.value,
-		modal.date.value,
-		modal.priority.value,
-	);
-	pushTask(newTask);
-}
-
-function pushTask(newTask) {
-	projectArray[currentProjectIndex].array.push(newTask);
-	console.log(projectArray);
-	renderTask(newTask);
-	saveStorage();
-}
-
-function renderTask(newTask) {
-	const task = document.createElement('div');
-	const checkbox = document.createElement('span');
-	const title = document.createElement('p');
-
-	DOM.taskWrapper.appendChild(task);
-	task.appendChild(checkbox);
-	task.appendChild(title);
-
-	checkbox.className = 'material-icons-outlined checkbox';
-	checkbox.textContent = 'radio_button_unchecked';
-	title.textContent = newTask.title;
-
-	function checkboxToggle() {
-		if (newTask.checkbox) {
-			checkbox.textContent = 'radio_button_unchecked';
-			newTask.checkbox = false;
-			taskColor(newTask, task);
-		} else {
-			checkbox.textContent = 'radio_button_checked';
-			task.className = 'task checked-priority';
-			newTask.checkbox = true;
-		}
-	}
-
-	taskColor(newTask, task);
-
-	checkbox.addEventListener('click', () => {
-		checkboxToggle();
-	});
-
-	task.addEventListener('click', () => {
-		setTaskIndex(projectArray[currentProjectIndex].array.indexOf(newTask));
-		setContainer({ task, checkbox, title });
-		setObject(projectArray[currentProjectIndex].array[currentTaskIndex]);
-		displayTaskDetails();
-		console.log(
-			currentTaskIndex,
-			currentProjectIndex,
-			projectArray[currentProjectIndex].array[currentTaskIndex],
-			currentTaskContainer,
-		);
-	});
+class Task {
+  constructor(title, description, date, priority, checkbox) {
+    this.title = title;
+    this.description = description;
+    this.date = date;
+    this.priority = priority;
+    this.checkbox = checkbox;
+  }
 }
 
 function taskColor(object, container) {
-	switch (object.priority) {
-		case 'low':
-			container.className = 'task low-priority';
-			break;
-		case 'medium':
-			container.className = 'task medium-priority';
-			break;
-		case 'high':
-			container.className = 'task high-priority';
-			break;
-		default:
-			container.className = 'task low-priority';
-	}
+  const currentContainer = container;
+  switch (object.priority) {
+    case "low":
+      currentContainer.className = "task low-priority";
+      break;
+    case "medium":
+      currentContainer.className = "task medium-priority";
+      break;
+    case "high":
+      currentContainer.className = "task high-priority";
+      break;
+    default:
+      currentContainer.className = "task low-priority";
+  }
 }
 
-export { createTask, renderTask, taskColor };
+function displayTaskDetails() {
+  taskDisplayer.title.textContent = currentObject.title;
+  taskDisplayer.description.textContent = currentObject.description;
+  taskDisplayer.date.textContent = currentObject.date;
+
+  if (currentObject.priority === "high") {
+    taskDisplayer.priority.style.color = "var(--red-high)";
+  } else if (currentObject.priority === "medium") {
+    taskDisplayer.priority.style.color = "var(--yellow-med)";
+  } else {
+    taskDisplayer.priority.style.color = "var(--green-low)";
+  }
+}
+
+function renderTask(newTask) {
+  const task = document.createElement("div");
+  const checkbox = document.createElement("span");
+  const title = document.createElement("p");
+
+  DOM.taskWrapper.appendChild(task);
+  task.appendChild(checkbox);
+  task.appendChild(title);
+
+  checkbox.className = "material-icons-outlined checkbox";
+  checkbox.textContent = "radio_button_unchecked";
+  title.textContent = newTask.title;
+
+  function checkboxToggle() {
+    const currentTask = newTask;
+    if (newTask.checkbox) {
+      checkbox.textContent = "radio_button_unchecked";
+      currentTask.checkbox = false;
+      taskColor(newTask, task);
+    } else {
+      checkbox.textContent = "radio_button_checked";
+      task.className = "task checked-priority";
+      currentTask.checkbox = true;
+    }
+  }
+
+  taskColor(newTask, task);
+
+  checkbox.addEventListener("click", () => {
+    checkboxToggle();
+  });
+
+  task.addEventListener("click", () => {
+    setTaskIndex(projectArray[currentProjectIndex].array.indexOf(newTask));
+    setContainer({ task, checkbox, title });
+    setObject(projectArray[currentProjectIndex].array[currentTaskIndex]);
+    displayTaskDetails();
+  });
+}
+
+function pushTask(newTask) {
+  projectArray[currentProjectIndex].array.push(newTask);
+  renderTask(newTask);
+  saveStorage();
+}
+
+function createTask(event) {
+  event.preventDefault();
+  const newTask = new Task(
+    modal.title.value,
+    modal.description.value,
+    modal.date.value,
+    modal.priority.value
+  );
+  pushTask(newTask);
+  clearModal();
+}
+
+
+
+
+
+
+  
+
+export { createTask, renderTask, taskColor, displayTaskDetails};
