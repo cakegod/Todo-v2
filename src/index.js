@@ -2,9 +2,12 @@ import "./styles.css";
 import "./normalize.css";
 import { taskDisplayer, modal, menu, DOM } from "./modules/DOM";
 import { createTask } from "./modules/task";
-import { submitEdit, openModal, closeModal, clearModal } from "./modules/taskDisplayer";
-
-
+import {
+  submitEdit,
+  openModal,
+  closeModal,
+  clearModal,
+} from "./modules/taskDisplayer";
 
 function addSubmitEvent() {
   modal.form.addEventListener("submit", createTask);

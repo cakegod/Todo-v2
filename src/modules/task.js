@@ -9,7 +9,7 @@ import {
   setTaskIndex,
   currentObject,
 } from "./global";
-import {clearModal} from "./taskDisplayer"; 
+import { clearModal } from "./taskDisplayer";
 
 class Task {
   constructor(title, description, date, priority, checkbox) {
@@ -61,8 +61,14 @@ function renderTask(newTask) {
   task.appendChild(checkbox);
   task.appendChild(title);
 
+  taskColor(newTask, task);
+
   checkbox.className = "material-icons-outlined checkbox";
-  checkbox.textContent = "radio_button_unchecked";
+  if (newTask.checkbox) {
+    checkbox.textContent = "radio_button_checked";
+    task.className = "task checked-priority";
+  } else checkbox.textContent = "radio_button_unchecked";
+
   title.textContent = newTask.title;
 
   function checkboxToggle() {
@@ -76,9 +82,8 @@ function renderTask(newTask) {
       task.className = "task checked-priority";
       currentTask.checkbox = true;
     }
+    saveStorage();
   }
-
-  taskColor(newTask, task);
 
   checkbox.addEventListener("click", () => {
     checkboxToggle();
@@ -110,11 +115,4 @@ function createTask(event) {
   clearModal();
 }
 
-
-
-
-
-
-  
-
-export { createTask, renderTask, taskColor, displayTaskDetails};
+export { createTask, renderTask, taskColor, displayTaskDetails };

@@ -1,5 +1,5 @@
 import { taskDisplayer, modal } from "./DOM";
-import { taskColor, displayTaskDetails} from "./task";
+import { taskColor, displayTaskDetails } from "./task";
 import { saveStorage } from "./storage";
 import {
   projectArray,
@@ -20,7 +20,6 @@ function closeModal() {
 function clearModal() {
   modal.form.reset();
 }
-
 
 function deleteTask() {
   projectArray[currentProjectIndex].array.splice(currentTaskIndex, 1);
@@ -58,6 +57,4 @@ taskDisplayer.edit.addEventListener("click", () => {
   editTask();
 });
 
-
-
-export {submitEdit, openModal, closeModal, clearModal}
+export { submitEdit, openModal, closeModal, clearModal };

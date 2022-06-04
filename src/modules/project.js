@@ -15,7 +15,6 @@ class Project {
   }
 }
 
-
 const newProject = new Project("home", []);
 projectArray.push(newProject);
 
@@ -86,8 +85,5 @@ function createProject(event) {
 
 // Submits the new Project
 project.container.addEventListener("submit", createProject);
-
-
-
 
 export { Project, renderProject };

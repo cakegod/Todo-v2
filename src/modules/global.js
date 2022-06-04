@@ -47,5 +47,5 @@ export {
   setContainer,
   setObject,
   setProject,
-  setProjectArray
+  setProjectArray,
 };
