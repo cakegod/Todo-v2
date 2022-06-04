@@ -20,7 +20,7 @@ function loadStorage() {
   projectArray.forEach((currentProject) => checkProjectName(currentProject));
 }
 
-if (projectArray.length > 0) {
+if (localStorage.getItem("projectArray") !== null) {
   loadStorage();
 }
 

@@ -15,8 +15,8 @@ class Project {
   }
 }
 
-const newProject = new Project("home", []);
-projectArray.push(newProject);
+const home = new Project("home", []);
+projectArray.push(home);
 
 function clearTasks() {
   DOM.taskWrapper.textContent = "";
